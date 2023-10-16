@@ -9,17 +9,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  llvm_linux:
-    strategy: { fail-fast: false, matrix: { llvm: ["14.0.6", "17.0.2"] } }
+  linux:
+    #strategy: { fail-fast: false, matrix: { llvm: ["14.0.6", "17.0.2"] } }
+    strategy: { fail-fast: false, matrix: { llvm: ["17.0.2"] } }
     name: linux-llvm-${{ matrix.llvm }}
     runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-{recommends,suggests} \
-            ccache clang cmake git lld ninja-build
-
+      - uses: actions/checkout@v4
       - uses: actions/cache@v3
         id: cache-llvm
         with:
@@ -27,6 +23,12 @@ jobs:
           path: |
             ~/.cache/ccache
             llvm-project/
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-{recommends,suggests} \
+            ccache clang cmake git lld ninja-build
 
       - name: Bootstrap LLVM + Odin
         env:
@@ -36,4 +38,5 @@ jobs:
           CXX_LD: /usr/bin/lld
           LD: /usr/bin/lld
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
-        run: ./bootstrap_llvm.sh
+        run: |
+          sh ./bootstrap_llvm.sh
