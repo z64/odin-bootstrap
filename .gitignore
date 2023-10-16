@@ -1,0 +1,13 @@
+# Ignore everything
+*
+
+# Include files
+!.gitignore
+!bootstrap_llvm.sh
+!LICENSE
+!README.md
+
+# Include files from directories
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml

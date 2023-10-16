@@ -1,0 +1,39 @@
+---
+name: LLVM
+
+on:
+  pull_request:
+    paths: [.github/workflows/llvm.yml, bootstrap_llvm.sh]
+  push:
+    paths: [.github/workflows/llvm.yml, bootstrap_llvm.sh]
+  workflow_dispatch:
+
+jobs:
+  llvm_linux:
+    strategy: { fail-fast: false, matrix: { llvm: ["14.0.6", "17.0.2"] } }
+    name: linux-llvm-${{ matrix.llvm }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-{recommends,suggests} \
+            ccache clang cmake git lld ninja-build
+
+      - uses: actions/cache@v3
+        id: cache-llvm
+        with:
+          key: linux-llvm-${{ matrix.llvm }}
+          path: |
+            ~/.cache/ccache
+            llvm-project/
+
+      - name: Bootstrap LLVM + Odin
+        env:
+          CC: /usr/bin/clang
+          CC_LD: /usr/bin/lld
+          CXX: /usr/bin/clang++
+          CXX_LD: /usr/bin/lld
+          LD: /usr/bin/lld
+          LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
+        run: ./bootstrap_llvm.sh
