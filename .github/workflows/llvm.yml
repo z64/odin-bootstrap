@@ -37,6 +37,40 @@ jobs:
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
         run: ./bootstrap_llvm.sh
 
+      - name: Odin version
+        run: cd Odin && ./odin version
+        timeout-minutes: 1
+      - name: Odin report
+        run: cd Odin && ./odin report
+        timeout-minutes: 1
+      - name: Odin check
+        run: cd Odin && ./odin check examples/demo -vet
+        timeout-minutes: 10
+      - name: Odin run
+        run: cd Odin && ./odin run examples/demo
+        timeout-minutes: 10
+      - name: Odin run -debug
+        run: cd Odin && ./odin run examples/demo -debug
+        timeout-minutes: 10
+      - name: Odin check examples/all
+        run: cd Odin && ./odin check examples/all -strict-style
+        timeout-minutes: 10
+      - name: Core library tests
+        run: cd Odin/tests/core && make
+        timeout-minutes: 10
+      - name: Odin internals tests
+        run: cd Odin/tests/internal && make
+        timeout-minutes: 10
+      - name: Odin check examples/all for Linux i386
+        run: cd Odin && ./odin check examples/all -vet -strict-style -target:linux_i386
+        timeout-minutes: 10
+      - name: Odin check examples/all for FreeBSD amd64
+        run: cd Odin && ./odin check examples/all -vet -strict-style -target:freebsd_amd64
+        timeout-minutes: 10
+      - name: Odin check examples/all for OpenBSD amd64
+        run: cd Odin && ./odin check examples/all -vet -strict-style -target:openbsd_amd64
+        timeout-minutes: 10
+
       # TODO(jcmdln): actions/upload-artifact breaks file permissions
       # TODO(jcmdln): https://github.com/actions/upload-artifact/issues/38
       - uses: actions/upload-artifact@v3
