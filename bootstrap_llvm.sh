@@ -2,16 +2,15 @@
 
 set -eux
 
-: ${CC:-clang}
-: ${CC_LD:-lld}
-: ${CXX:-clang++}
-: ${CXX_LD:-lld}
+: ${CC=clang}
+: ${CXX=clang++}
+: ${LD=lld}
 
-: ${CMAKE_GENERATOR:-Ninja}
-: ${LLVM_BRANCH:-llvmorg-17.0.2}
-: ${LLVM_SOURCE:-https://github.com/llvm/llvm-project}
-: ${ODIN_BRANCH:-master}
-: ${ODIN_SOURCE:-https://github.com/odin-lang/Odin}
+: ${CMAKE_GENERATOR=Ninja}
+: ${LLVM_BRANCH=llvmorg-17.0.2}
+: ${LLVM_SOURCE=https://github.com/llvm/llvm-project}
+: ${ODIN_BRANCH=master}
+: ${ODIN_SOURCE=https://github.com/odin-lang/Odin}
 
 LLVM_PATH="$PWD/llvm-project"
 LLVM_BUILD_PATH="$LLVM_PATH/build"
