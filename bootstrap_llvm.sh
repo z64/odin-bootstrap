@@ -81,4 +81,4 @@ cd "$(basename $ODIN_SOURCE)"
 CXX="$LLVM_BIN_PATH/clang++" \
 CXX_LD="$LLVM_BIN_PATH/lld" \
 LLVM_CONFIG="$LLVM_BIN_PATH/llvm-config" \
-./build_odin.sh
+./build_odin.sh release
