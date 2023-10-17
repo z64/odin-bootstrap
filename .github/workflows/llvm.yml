@@ -48,10 +48,9 @@ jobs:
           cp Odin/LICENSE      distrib/
           cp Odin/libLLVM-*.so distrib/
           cp Odin/odin         distrib/
-          chmod +x distrib/odin
-          chmod +x distrib/libLLVM-*.so
 
-      - uses: actions/upload-artifact@v3
+      # TODO(jcmdln): actions/upload-artifact@2+ breaks file permissions
+      - uses: actions/upload-artifact@v1
         if: github.repository == 'jcmdln/odin-bootstrap'
         with:
           name: odin-linux-llvm-${{ matrix.llvm }}
