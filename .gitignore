@@ -6,8 +6,13 @@
 !bootstrap_llvm.sh
 !LICENSE
 !README.md
+!.editorconfig
+!.prettierrc.yml
 
 # Include files from directories
 !.github/
 !.github/workflows/
 !.github/workflows/*.yml
+
+!.vscode/
+!.vscode/extensions.json

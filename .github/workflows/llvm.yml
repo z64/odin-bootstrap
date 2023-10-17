@@ -10,7 +10,6 @@ on:
 
 jobs:
   linux:
-    #strategy: { fail-fast: false, matrix: { llvm: ["14.0.6", "17.0.2"] } }
     strategy: { fail-fast: false, matrix: { llvm: ["17.0.2"] } }
     name: linux-llvm-${{ matrix.llvm }}
     runs-on: ubuntu-latest
@@ -38,5 +37,4 @@ jobs:
           CXX_LD: /usr/bin/lld
           LD: /usr/bin/lld
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
-        run: |
-          sh ./bootstrap_llvm.sh
+        run: ./bootstrap_llvm.sh
