@@ -39,15 +39,20 @@ jobs:
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
         run: ./bootstrap_llvm.sh
 
+      # TODO(jcmdln): actions/upload-artifact@1 requires pre-bundling
+      - name: Create Linux LLVM-${{ matrix.llvm }} distributable
+        run: |
+          mkdir distrib/
+          cp -r Odin/core/        distrib/
+          cp -r Odin/examples/    distrib/
+          cp -r Odin/vendor/      distrib/
+          cp    Odin/LICENSE      distrib/
+          cp    Odin/libLLVM-*.so distrib/
+          cp    Odin/odin         distrib/
+
       # TODO(jcmdln): actions/upload-artifact@2+ breaks file permissions
       - uses: actions/upload-artifact@v1
         if: github.repository == 'jcmdln/odin-bootstrap'
         with:
           name: odin-linux-llvm-${{ matrix.llvm }}
-          path: |
-            Odin/core/
-            Odin/examples/
-            Odin/vendor/
-            Odin/LICENSE
-            Odin/libLLVM-*.so
-            Odin/odin
+          path: distrib/
