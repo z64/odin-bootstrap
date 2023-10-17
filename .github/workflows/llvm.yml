@@ -15,13 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/cache@v3
-        id: cache-llvm
-        with:
-          key: linux-llvm-${{ matrix.llvm }}
-          path: |
-            ~/.cache/ccache
-            llvm-project/
+        with: { key: linux-ccache, path: ~/.cache/ccache }
+      - uses: actions/cache@v3
+        with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
       - name: Install dependencies
         run: |
@@ -39,20 +37,16 @@ jobs:
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
         run: ./bootstrap_llvm.sh
 
-      # TODO(jcmdln): actions/upload-artifact@1 requires pre-bundling
-      - name: Create Linux LLVM-${{ matrix.llvm }} distributable
-        run: |
-          mkdir distrib/
-          cp -r Odin/core/        distrib/
-          cp -r Odin/examples/    distrib/
-          cp -r Odin/vendor/      distrib/
-          cp    Odin/LICENSE      distrib/
-          cp    Odin/libLLVM-*.so distrib/
-          cp    Odin/odin         distrib/
-
-      # TODO(jcmdln): actions/upload-artifact@2+ breaks file permissions
-      - uses: actions/upload-artifact@v1
+      # TODO(jcmdln): actions/upload-artifact breaks file permissions
+      # TODO(jcmdln): https://github.com/actions/upload-artifact/issues/38
+      - uses: actions/upload-artifact@v3
         if: github.repository == 'jcmdln/odin-bootstrap'
         with:
           name: odin-linux-llvm-${{ matrix.llvm }}
-          path: distrib/
+          path: |
+            Odin/core/
+            Odin/examples/
+            Odin/vendor/
+            Odin/LICENSE
+            Odin/libLLVM-*.so
+            Odin/odin

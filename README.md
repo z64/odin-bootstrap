@@ -10,20 +10,29 @@ Artifacts containing distributable bundles may be found in the following:
 
 Click the latest successful pipeline for the list of generated artifacts.
 
+**NOTE**: actions/upload-artifact breaks file permissions! https://github.com/actions/upload-artifact/issues/38
+
+```sh
+# After downloading an artifact, fix permissions and test Odin
+unzip odin-linux-llvm-* -d odin
+chmod +x odin/{libLLVM-*.so,odin}
+./odin/odin run odin/examples/demo/demo.odin -file
+```
+
 ## Linux
 
-Some additional steps may be needed for the distributable bundles to work.
+Some additional steps may be needed for distributable bundles.
 
 ### Debian / Ubuntu
 
 ```sh
-sudo apt-get install --no-install-{recommends,suggests} clang llvm-dev libncurses-dev
+sudo apt-get install --no-install-{recommends,suggests} clang libncurses-dev
 ```
 
 ### Fedora / CentOS
 
 ```sh
-sudo dnf install clang llvm-devel ncurses-libs
+sudo dnf install clang ncurses-libs
 ```
 
 # Special Thanks
