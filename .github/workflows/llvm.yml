@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache/restore@v3
         with: { key: linux-ccache, path: ~/.cache/ccache }
-      - uses: actions/cache@v3
+      - uses: actions/cache/restore@v3
         with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
       - name: Install dependencies
@@ -69,6 +69,13 @@ jobs:
       - name: Odin check examples/all for OpenBSD amd64
         run: cd Odin && ./odin check examples/all -vet -strict-style -target:openbsd_amd64
         timeout-minutes: 10
+
+      - uses: actions/cache/save@v3
+        if: github.ref == 'master'
+        with: { key: linux-ccache, path: ~/.cache/ccache }
+      - uses: actions/cache/save@v3
+        if: github.ref == 'master'
+        with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
       # TODO(jcmdln): actions/upload-artifact breaks file permissions
       # TODO(jcmdln): https://github.com/actions/upload-artifact/issues/38
