@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/cache@v3
         with: { key: linux-ccache, path: ~/.cache/ccache }
       - uses: actions/cache@v3
