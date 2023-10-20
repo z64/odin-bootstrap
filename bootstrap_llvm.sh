@@ -6,11 +6,15 @@ set -eux
 : ${CXX=clang++}
 : ${LD=lld}
 
-: ${CMAKE_GENERATOR=Ninja}
+: ${CMAKE_GENERATOR="Unix Makefiles"}
 : ${LLVM_BRANCH=llvmorg-17.0.2}
 : ${LLVM_SOURCE=https://github.com/llvm/llvm-project}
 : ${ODIN_BRANCH=master}
 : ${ODIN_SOURCE=https://github.com/odin-lang/Odin}
+
+if [ -e "$(command -v ninja)" ]; then
+	CMAKE_GENERATOR=Ninja
+fi
 
 #
 # LLVM
