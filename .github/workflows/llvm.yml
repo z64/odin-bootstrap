@@ -71,10 +71,10 @@ jobs:
         timeout-minutes: 10
 
       - uses: actions/cache/save@v3
-        if: github.ref == 'master'
+        if: github.ref_name == 'master'
         with: { key: linux-ccache, path: ~/.cache/ccache }
       - uses: actions/cache/save@v3
-        if: github.ref == 'master'
+        if: github.ref_name == 'master'
         with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
       # TODO(jcmdln): actions/upload-artifact breaks file permissions
