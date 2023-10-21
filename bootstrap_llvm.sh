@@ -77,7 +77,7 @@ llvm_build() {
 		llvm_cmake $@
 	fi
 
-	if [ -e "$(command -v ninja)" ]; then
+	if [ "$CMAKE_GENERATOR" = "Ninja" ]; then
 		ninja -C $LLVM_BUILD_PATH
 	else
 		_cwd=$PWD
