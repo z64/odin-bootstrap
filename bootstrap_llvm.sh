@@ -76,6 +76,16 @@ llvm_build() {
 	else
 		llvm_cmake $@
 	fi
+
+	if [ -e "$(command -v ninja)" ]; then
+		ninja -C $LLVM_BUILD_PATH
+	else
+		_cwd=$PWD
+		cd $LLVM_BUILD_PATH
+		make
+		cd $_cwd
+		unset _cwd
+	fi
 }
 
 case "$(uname -s)" in
@@ -86,16 +96,6 @@ Darwin)
 	llvm_build
 	;;
 esac
-
-if [ -e "$(command -v ninja)" ]; then
-	ninja -C $LLVM_BUILD_PATH
-else
-	_cwd=$PWD
-	cd $LLVM_BUILD_PATH
-	make
-	cd $_cwd
-	unset _cwd
-fi
 
 #
 # Odin
