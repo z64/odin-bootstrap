@@ -2,15 +2,15 @@
 
 set -eux
 
-: ${CC=clang}
-: ${CXX=clang++}
-: ${LD=lld}
+CC="${CC:-clang}"
+CXX="${CXX:-clang++}"
+LD="${LD:-lld}"
 
-: ${CMAKE_GENERATOR="Unix Makefiles"}
-: ${LLVM_BRANCH=llvmorg-17.0.2}
-: ${LLVM_SOURCE=https://github.com/llvm/llvm-project}
-: ${ODIN_BRANCH=master}
-: ${ODIN_SOURCE=https://github.com/odin-lang/Odin}
+CMAKE_GENERATOR="${CMAKE_GENERATOR:-Unix Makefiles}"
+LLVM_BRANCH="${LLVM_BRANCH:-llvmorg-17.0.2}"
+LLVM_SOURCE="${LLVM_SOURCE:-https://github.com/llvm/llvm-project}"
+ODIN_BRANCH="${ODIN_BRANCH:-master}"
+ODIN_SOURCE="${ODIN_SOURCE:-https://github.com/odin-lang/Odin}"
 
 if [ -e "$(command -v ninja)" ]; then
 	CMAKE_GENERATOR="Ninja"
