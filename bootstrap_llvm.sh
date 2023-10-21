@@ -13,7 +13,7 @@ set -eux
 : ${ODIN_SOURCE=https://github.com/odin-lang/Odin}
 
 if [ -e "$(command -v ninja)" ]; then
-	CMAKE_GENERATOR=Ninja
+	CMAKE_GENERATOR="Ninja"
 fi
 
 #
@@ -34,7 +34,7 @@ if [ ! -d "$LLVM_BUILD_PATH" ]; then
 fi
 
 llvm_build() {
-	cmake -Wno-dev -G $CMAKE_GENERATOR -B $LLVM_BUILD_PATH -S $LLVM_SOURCE_PATH \
+	cmake -Wno-dev -G "$CMAKE_GENERATOR" -B $LLVM_BUILD_PATH -S $LLVM_SOURCE_PATH \
 		-DCMAKE_BUILD_TYPE:STRING="Release" \
 		-DLLVM_ENABLE_PROJECTS:STRING="clang;compiler-rt;lld" \
 		-DLLVM_TARGETS_TO_BUILD:STRING="AArch64;ARM;WebAssembly;X86" \
@@ -80,7 +80,15 @@ Darwin)
 	;;
 esac
 
-ninja -C $LLVM_BUILD_PATH
+if [ -e "$(command -v ninja)" ]; then
+	ninja -C $LLVM_BUILD_PATH
+else
+	_cwd=$PWD
+	cd $LLVM_BUILD_PATH
+	make
+	cd $_cwd
+	unset _cwd
+fi
 
 #
 # Odin
