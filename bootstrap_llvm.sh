@@ -33,13 +33,12 @@ if [ ! -d "$LLVM_BUILD_PATH" ]; then
 	mkdir -p $LLVM_BUILD_PATH
 fi
 
-llvm_build() {
+llvm_cmake() {
 	cmake -Wno-dev -G "$CMAKE_GENERATOR" -B $LLVM_BUILD_PATH -S $LLVM_SOURCE_PATH \
 		-DCMAKE_BUILD_TYPE:STRING="Release" \
 		-DLLVM_ENABLE_PROJECTS:STRING="clang;compiler-rt;lld" \
 		-DLLVM_TARGETS_TO_BUILD:STRING="AArch64;ARM;WebAssembly;X86" \
 		-DLLVM_INCLUDE_TOOLS:BOOL=FORCE_ON \
-		-DLLVM_CCACHE_BUILD:BOOL=FORCE_ON \
 		-DLLVM_BUILD_LLVM_DYLIB:BOOL=FORCE_ON \
 		-DLLVM_LINK_LLVM_DYLIB:BOOL=FORCE_ON \
 		-DCLANG_BUILD_EXAMPLES:BOOL=OFF \
@@ -69,6 +68,14 @@ llvm_build() {
 		-DLLVM_INCLUDE_UTILS:BOOL=OFF \
 		-DLLVM_TOOL_LLVM_C_TEST_BUILD:BOOL=OFF \
 		$@
+}
+
+llvm_build() {
+	if [ -e "$(command -v ccache)" ]; then
+		llvm_cmake -DLLVM_CCACHE_BUILD:BOOL=FORCE_ON $@
+	else
+		llvm_cmake $@
+	fi
 }
 
 case "$(uname -s)" in
