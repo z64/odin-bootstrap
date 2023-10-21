@@ -28,18 +28,22 @@ chmod +x {libLLVM-*.so,odin}
 
 ## Linux
 
-Some additional steps are needed for distributable bundles.
+Some minimum requirements and additional steps are needed for distributable bundles.
 
-### Debian / Ubuntu
+- CXXABI v1.3.13+
+- GLIBC v2.34+
+- GLIBCXX v3.4.30+
+
+### Debian 12+ (Bookworm) / Ubuntu 22.04+
 
 ```sh
-sudo apt-get install --no-install-{recommends,suggests} clang
+sudo apt-get install --no-install-{recommends,suggests} ca-certificates clang curl unzip
 ```
 
-### Fedora / CentOS
+### Fedora 38+ / CentOS Stream 9+
 
 ```sh
-sudo dnf install clang
+sudo dnf install clang curl unzip
 ```
 
 # Special Thanks
