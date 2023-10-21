@@ -37,38 +37,49 @@ jobs:
         run: ./bootstrap_llvm.sh
 
       - name: Odin version
-        run: cd Odin && ./odin version
+        run: ./odin version
         timeout-minutes: 1
+        working-directory: Odin
       - name: Odin report
-        run: cd Odin && ./odin report
+        run: ./odin report
         timeout-minutes: 1
+        working-directory: Odin
       - name: Odin check
-        run: cd Odin && ./odin check examples/demo -vet
+        run: ./odin check examples/demo -vet
         timeout-minutes: 10
+        working-directory: Odin
       - name: Odin run
-        run: cd Odin && ./odin run examples/demo
+        run: ./odin run examples/demo
         timeout-minutes: 10
+        working-directory: Odin
       - name: Odin run -debug
-        run: cd Odin && ./odin run examples/demo -debug
+        run: ./odin run examples/demo -debug
         timeout-minutes: 10
+        working-directory: Odin
       - name: Odin check examples/all
-        run: cd Odin && ./odin check examples/all -strict-style
+        run: ./odin check examples/all -strict-style
         timeout-minutes: 10
+        working-directory: Odin
       - name: Core library tests
-        run: cd Odin/tests/core && make
+        run: make
         timeout-minutes: 10
+        working-directory: Odin/tests/core
       - name: Odin internals tests
-        run: cd Odin/tests/internal && make
+        run: make
         timeout-minutes: 10
+        working-directory: Odin/tests/internal
       - name: Odin check examples/all for Linux i386
-        run: cd Odin && ./odin check examples/all -vet -strict-style -target:linux_i386
+        run: ./odin check examples/all -vet -strict-style -target:linux_i386
         timeout-minutes: 10
+        working-directory: Odin
       - name: Odin check examples/all for FreeBSD amd64
-        run: cd Odin && ./odin check examples/all -vet -strict-style -target:freebsd_amd64
+        run: ./odin check examples/all -vet -strict-style -target:freebsd_amd64
         timeout-minutes: 10
+        working-directory: Odin
       - name: Odin check examples/all for OpenBSD amd64
-        run: cd Odin && ./odin check examples/all -vet -strict-style -target:openbsd_amd64
+        run: ./odin check examples/all -vet -strict-style -target:openbsd_amd64
         timeout-minutes: 10
+        working-directory: Odin
 
       - uses: actions/cache/save@v3
         if: github.ref_name == 'master'
