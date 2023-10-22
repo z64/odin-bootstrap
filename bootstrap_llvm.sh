@@ -82,7 +82,7 @@ llvm_build() {
 	else
 		_cwd=$PWD
 		cd $LLVM_BUILD_PATH
-		make
+		make -j$(grep -c "processor" /proc/cpuinfo)
 		cd $_cwd
 		unset _cwd
 	fi
