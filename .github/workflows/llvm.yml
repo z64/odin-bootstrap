@@ -10,11 +10,12 @@ on:
 
 jobs:
   linux:
-    strategy: { fail-fast: false, matrix: { llvm: ["17.0.2"] } }
+    strategy: { fail-fast: false, matrix: { llvm: ["17.0.3"] } }
     name: linux-llvm-${{ matrix.llvm }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/cache/restore@v3
         with: { key: linux-ccache, path: ~/.cache/ccache }
       - uses: actions/cache/restore@v3

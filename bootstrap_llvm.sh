@@ -7,7 +7,7 @@ CXX="${CXX:-clang++}"
 LD="${LD:-lld}"
 
 CMAKE_GENERATOR="${CMAKE_GENERATOR:-Unix Makefiles}"
-LLVM_BRANCH="${LLVM_BRANCH:-llvmorg-17.0.2}"
+LLVM_BRANCH="${LLVM_BRANCH:-llvmorg-17.0.3}"
 LLVM_SOURCE="${LLVM_SOURCE:-https://github.com/llvm/llvm-project}"
 ODIN_BRANCH="${ODIN_BRANCH:-master}"
 ODIN_SOURCE="${ODIN_SOURCE:-https://github.com/odin-lang/Odin}"
