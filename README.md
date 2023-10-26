@@ -39,12 +39,16 @@ $ du -sh Odin/odin
 
 ## Linux
 
-The following runtime dependencies are required for Odin to run:
+The following runtime dependencies are required for Odin distributables to run:
 
 - Clang in `PATH`
 - CXXABI v1.3.13+
 - GLIBC v2.34+
 - GLIBCXX v3.4.30+
+
+These version requirements are a side-effect of building on an Ubuntu 22.04
+image in GitHub Actions. If you don't have at least these versions available,
+consider using the `bootstrap_llvm.sh` yourself.
 
 ### Debian 12+ (Bookworm) / Ubuntu 22.04+
 
