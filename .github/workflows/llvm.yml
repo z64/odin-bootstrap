@@ -100,5 +100,4 @@ jobs:
             Odin/examples/
             Odin/vendor/
             Odin/LICENSE
-            Odin/libLLVM-*.so
             Odin/odin
