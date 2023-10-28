@@ -11,7 +11,7 @@ CMAKE_GENERATOR="${CMAKE_GENERATOR:-Unix Makefiles}"
 LLVM_BRANCH="${LLVM_BRANCH:-llvmorg-17.0.3}"
 LLVM_SOURCE="${LLVM_SOURCE:-https://github.com/llvm/llvm-project}"
 ODIN_BRANCH="${ODIN_BRANCH:-master}"
-ODIN_SOURCE="${ODIN_SOURCE:-https://github.com/odin-lang/Odin}"
+ODIN_SOURCE="${ODIN_SOURCE:-https://github.com/jcmdln/Odin}"
 
 if [ -e "$(command -v ninja)" ]; then
 	CMAKE_GENERATOR="Ninja"
