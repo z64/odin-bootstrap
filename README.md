@@ -13,7 +13,7 @@ Click the latest successful pipeline for the list of generated artifacts.
 
 The following runtime dependencies are required for Odin distributables:
 
-- Clang in `PATH`
+- Clang 11+ in `PATH`
 - GLIBC v2.31+
 
 Alternatively you may use `./bootstrap_llvm.sh` to reproduce Odin locally.

@@ -9,10 +9,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux:
-    strategy: { fail-fast: false, matrix: { llvm: ["17.0.3"] } }
+  build_linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        llvm: ["17.0.3"]
+        os: ["ubuntu-20.04"]
+
     name: linux-llvm-${{ matrix.llvm }}
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -21,19 +26,40 @@ jobs:
       - uses: actions/cache/restore@v3
         with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
-      - name: Install dependencies
+      - name: Install cmake + ccache + ninja
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-{recommends,suggests} \
-            ccache ninja-build
+          sudo apt-get install -y --no-install-{recommends,suggests} cmake ccache ninja-build
+      - name: Install clang + lld
+        if: matrix.os != 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-{recommends,suggests} clang lld
+
+      # NOTE(jcmdln): Ubuntu 20.04 requires handling errata
+      - name: (Ubuntu 20.04) Install clang-11 + lld-11
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-{recommends,suggests} clang-11 lld-11
+      - name: (Ubuntu 20.04) Make Clang/LLVM 11 the default
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          sudo ln -sf /usr/bin/clang-11   /usr/bin/clang
+          sudo ln -sf /usr/bin/clang++-11 /usr/bin/clang++
+          sudo ln -sf /usr/bin/lld-11     /usr/bin/lld
+      - name: (Ubuntu 20.04) Setup newer CMake for LLVM-17
+        if: matrix.os == 'ubuntu-20.04'
+        uses: jwlawson/actions-setup-cmake@v1.14.1
+        with: { cmake-version: "3.x" }
 
       - name: Bootstrap LLVM + Odin
         env:
-          CC: /usr/bin/clang
-          CC_LD: /usr/bin/lld
-          CXX: /usr/bin/clang++
-          CXX_LD: /usr/bin/lld
-          LD: /usr/bin/lld
+          CC: /usr/bin/clang-11
+          CC_LD: /usr/bin/lld-11
+          CXX: /usr/bin/clang++-11
+          CXX_LD: /usr/bin/lld-11
+          LD: /usr/bin/lld-11
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
         run: ./bootstrap_llvm.sh
 
