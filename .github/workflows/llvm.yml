@@ -12,7 +12,7 @@ jobs:
   linux:
     strategy: { fail-fast: false, matrix: { llvm: ["17.0.3"] } }
     name: linux-llvm-${{ matrix.llvm }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
 
