@@ -16,18 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore linux-ccache
+      - name: Restore build cache for linux-llvm-${{ matrix.llvm }}
         uses: actions/cache/restore@v3
-        with: { key: linux-ccache, path: ~/.ccache }
-      - name: Restore linux-llvm-${{ matrix.llvm }}
-        uses: actions/cache/restore@v3
-        with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
+        with: { key: "linux-llvm-${{ matrix.llvm }}", path: build/ }
 
       - name: Install clang-12 + lld-12 + botan
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-{recommends,suggests} \
-            cmake ccache ninja-build {clang,lld}-12 libbotan-2-dev botan
+            cmake ninja-build {clang,lld}-12 libbotan-2-dev botan
       - name: Make Clang/LLVM 12 the default
         run: |
           sudo ln -sf /usr/bin/clang-12   /usr/bin/clang
@@ -104,14 +101,10 @@ jobs:
         timeout-minutes: 10
         working-directory: Odin
 
-      - name: Save linux-ccache
+      - name: Save build cache for linux-llvm-${{ matrix.llvm }}
         uses: actions/cache/save@v3
         if: github.ref_name == 'master'
-        with: { key: linux-ccache, path: ~/.ccache }
-      - name: Save linux-llvm-${{ matrix.llvm }}
-        uses: actions/cache/save@v3
-        if: github.ref_name == 'master'
-        with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
+        with: { key: "linux-llvm-${{ matrix.llvm }}", path: build/ }
 
       # TODO(jcmdln): actions/upload-artifact breaks file permissions
       # TODO(jcmdln): https://github.com/actions/upload-artifact/issues/38

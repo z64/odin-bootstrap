@@ -21,20 +21,11 @@ fi
 # LLVM
 #
 
-LLVM_PATH="$PWD/llvm-project"
-LLVM_BUILD_PATH="$LLVM_PATH/build"
+LLVM_BUILD_PATH="$PWD/build"
 LLVM_BIN_PATH="$LLVM_BUILD_PATH/bin"
-LLVM_SOURCE_PATH="$LLVM_PATH/llvm"
-
 LLVM_CONFIG="$LLVM_BIN_PATH/llvm-config"
-
-if [ ! -d "$(basename $LLVM_SOURCE)" ]; then
-	git clone --branch="$LLVM_BRANCH" --depth=1 $LLVM_SOURCE
-fi
-
-if [ ! -d "$LLVM_BUILD_PATH" ]; then
-	mkdir -p $LLVM_BUILD_PATH
-fi
+LLVM_PATH="$PWD/llvm-project"
+LLVM_SOURCE_PATH="$LLVM_PATH/llvm"
 
 llvm_cmake() {
 	cmake -Wno-dev -G "$CMAKE_GENERATOR" -B $LLVM_BUILD_PATH -S $LLVM_SOURCE_PATH \
@@ -64,20 +55,26 @@ llvm_cmake() {
 }
 
 llvm_build() {
-	if [ -e "$(command -v ccache)" ]; then
-		llvm_cmake -DLLVM_CCACHE_BUILD:BOOL=FORCE_ON $@
-	else
-		llvm_cmake $@
-	fi
+	if [ ! -e $LLVM_BUILD_PATH/CMakeCache.txt ]; then
+		if [ ! -d "$(basename $LLVM_SOURCE)" ]; then
+			git clone --branch="$LLVM_BRANCH" --depth=1 $LLVM_SOURCE
+		fi
 
-	if [ "$CMAKE_GENERATOR" = "Ninja" ]; then
-		ninja -C $LLVM_BUILD_PATH
-	else
-		_cwd=$PWD
-		cd $LLVM_BUILD_PATH
-		make -j$(grep -c "processor" /proc/cpuinfo)
-		cd $_cwd
-		unset _cwd
+		if [ ! -d "$LLVM_BUILD_PATH" ]; then
+			mkdir -p $LLVM_BUILD_PATH
+		fi
+
+		llvm_cmake $@
+
+		if [ "$CMAKE_GENERATOR" = "Ninja" ]; then
+			ninja -C $LLVM_BUILD_PATH
+		else
+			_cwd=$PWD
+			cd $LLVM_BUILD_PATH
+			make -j$(grep -c "processor" /proc/cpuinfo)
+			cd $_cwd
+			unset _cwd
+		fi
 	fi
 }
 
