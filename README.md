@@ -16,7 +16,7 @@ The following runtime dependencies are required for Odin distributables:
 - Clang 12+ in `PATH`
 - GLIBC v2.31+
 
-Alternatively you may use `./bootstrap_llvm.sh` to reproduce Odin locally.
+Alternatively you may use `./odin_llvm.sh` to reproduce Odin locally.
 
 ## Errata
 

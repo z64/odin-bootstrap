@@ -11,7 +11,9 @@ CMAKE_GENERATOR="${CMAKE_GENERATOR:-Unix Makefiles}"
 LLVM_BRANCH="${LLVM_BRANCH:-llvmorg-17.0.3}"
 LLVM_SOURCE="${LLVM_SOURCE:-https://github.com/llvm/llvm-project}"
 ODIN_BRANCH="${ODIN_BRANCH:-master}"
-ODIN_SOURCE="${ODIN_SOURCE:-https://github.com/jcmdln/Odin}"
+ODIN_SOURCE="${ODIN_SOURCE:-https://github.com/odin-lang/Odin}"
+
+OS_NAME="$(uname -s)"
 
 if [ -e "$(command -v ninja)" ]; then
 	CMAKE_GENERATOR="Ninja"
@@ -33,7 +35,7 @@ if [ ! -d "$(basename $LLVM_SOURCE)" ]; then
 fi
 
 llvm_cmake() {
-	cmake -Wno-dev -G "$CMAKE_GENERATOR" -B $LLVM_BUILD_PATH -S $LLVM_SOURCE_PATH \
+	cmake -Wno-dev -G "$CMAKE_GENERATOR" -B "$LLVM_BUILD_PATH" -S "$LLVM_SOURCE_PATH" \
 		-DCMAKE_BUILD_TYPE:STRING="$CMAKE_BUILD_TYPE" \
 		-DLLVM_ENABLE_PROJECTS:STRING="compiler-rt" \
 		-DLLVM_TARGETS_TO_BUILD:STRING="AArch64;ARM;WebAssembly;X86" \
@@ -61,25 +63,33 @@ llvm_cmake() {
 
 llvm_build() {
 	if [ ! -d "$LLVM_BUILD_PATH" ]; then
-		mkdir -p $LLVM_BUILD_PATH
+		mkdir -p "$LLVM_BUILD_PATH"
 	fi
 
-	if [ ! -e $LLVM_BUILD_PATH/CMakeCache.txt ]; then
+	if [ ! -f "$LLVM_BUILD_PATH/CMakeCache.txt" ]; then
 		llvm_cmake $@
 
 		if [ "$CMAKE_GENERATOR" = "Ninja" ]; then
 			ninja -C $LLVM_BUILD_PATH
 		else
-			_cwd=$PWD
-			cd $LLVM_BUILD_PATH
-			make -j$(grep -c "processor" /proc/cpuinfo)
-			cd $_cwd
-			unset _cwd
+			case "$OS_NAME" in
+			Darwin)
+				make -C $LLVM_BUILD_PATH -j$(sysctl -n hw.logicalcpu)
+				;;
+			FreeBSD|OpenBSD)
+				make -C $LLVM_BUILD_PATH -j$(sysctl -n hw.ncpu)
+				;;
+			Linux)
+				make -C $LLVM_BUILD_PATH -j$(grep -c "processor" /proc/cpuinfo)
+				;;
+			*)
+				make -C $LLVM_BUILD_PATH
+				;;
+			esac
 		fi
 	fi
 }
 
-OS_NAME="$(uname -s)"
 case "$OS_NAME" in
 Darwin)
 	# Darwin doesn't need static linking
@@ -111,10 +121,10 @@ Linux)
 	# We need to statically link Odin against LLVM
 	CPPFLAGS="-DODIN_VERSION_RAW=\"dev-$(date +"%Y-%m")\""
 	CXXFLAGS="-O3 -march=x86-64 -std=c++14"
-	CXXFLAGS="$CXXFLAGS $($LLVM_CONFIG --cxxflags --ldflags)"
+	CXXFLAGS="$CXXFLAGS $($LLVM_CONFIG --cxxflags --ldflags --system-libs)"
 	DISABLED_WARNINGS="-Wno-switch -Wno-macro-redefined -Wno-unused-value"
 	LDFLAGS="-pthread -lm -lstdc++"
-	LDFLAGS="$LDFLAGS $($LLVM_CONFIG --system-libs --libfiles --libs aarch64 arm core native passes runtimedyld webassembly)"
+	LDFLAGS="$LDFLAGS $($LLVM_CONFIG --libfiles --libs aarch64 arm core native passes runtimedyld webassembly)"
 
 	if [ -d ".git" ] && [ -n "$(command -v git)" ]; then
 		GIT_SHA=$(git show --pretty='%h' --no-patch --no-notes HEAD)

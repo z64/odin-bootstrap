@@ -2,12 +2,12 @@
 *
 
 # Include files
+!.editorconfig
 !.gitignore
-!bootstrap_llvm.sh
+!.prettierrc.yml
 !LICENSE
 !README.md
-!.editorconfig
-!.prettierrc.yml
+!odin_llvm.sh
 
 # Include files from directories
 !.github/

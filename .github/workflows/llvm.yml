@@ -3,9 +3,9 @@ name: LLVM
 
 on:
   pull_request:
-    paths: [.github/workflows/llvm.yml, bootstrap_llvm.sh]
+    paths: [.github/workflows/llvm.yml, odin_llvm.sh]
   push:
-    paths: [.github/workflows/llvm.yml, bootstrap_llvm.sh]
+    paths: [.github/workflows/llvm.yml, odin_llvm.sh]
   workflow_dispatch:
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
           CXX_LD: /usr/bin/lld-12
           LD: /usr/bin/lld-12
           LLVM_BRANCH: llvmorg-${{ matrix.llvm }}
-        run: ./bootstrap_llvm.sh
+        run: ./odin_llvm.sh
 
       - name: Odin version
         run: ./odin version
