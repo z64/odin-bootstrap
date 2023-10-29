@@ -10,48 +10,32 @@ on:
 
 jobs:
   build_linux:
-    strategy:
-      fail-fast: false
-      matrix:
-        llvm: ["17.0.3"]
-        os: ["ubuntu-20.04"]
-
+    runs-on: ubuntu-20.04
+    strategy: { fail-fast: false, matrix: { llvm: ["17.0.3"] } }
     name: linux-llvm-${{ matrix.llvm }}
-    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/cache/restore@v3
-        with: { key: linux-ccache, path: ~/.cache/ccache }
-      - uses: actions/cache/restore@v3
+      - name: Restore linux-ccache
+        uses: actions/cache/restore@v3
+        with: { key: linux-ccache, path: ~/.ccache }
+      - name: Restore linux-llvm-${{ matrix.llvm }}
+        uses: actions/cache/restore@v3
         with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
-      - name: Install cmake + ccache + ninja
+      - name: Install clang-12 + lld-12 + botan
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-{recommends,suggests} cmake ccache ninja-build
-      - name: Install clang + lld
-        if: matrix.os != 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-{recommends,suggests} clang lld
-
-      # NOTE(jcmdln): Ubuntu 20.04 requires handling errata
-      - name: (Ubuntu 20.04) Install clang-12 + lld-12
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-{recommends,suggests} {clang,lld}-12
-      - name: (Ubuntu 20.04) Make Clang/LLVM 12 the default
-        if: matrix.os == 'ubuntu-20.04'
+          sudo apt-get install -y --no-install-{recommends,suggests} \
+            cmake ccache ninja-build {clang,lld}-12 libbotan-2-dev botan
+      - name: Make Clang/LLVM 12 the default
         run: |
           sudo ln -sf /usr/bin/clang-12   /usr/bin/clang
           sudo ln -sf /usr/bin/clang++-12 /usr/bin/clang++
           sudo ln -sf /usr/bin/lld-12     /usr/bin/lld
-      - name: (Ubuntu 20.04) Setup newer CMake for LLVM-17
-        if: matrix.os == 'ubuntu-20.04'
+      - name: Setup newer CMake for LLVM-17
         uses: jwlawson/actions-setup-cmake@v1.14.1
-        with: { cmake-version: "3.x" }
+        with: { cmake-version: "3.27.7" }
 
       - name: Bootstrap LLVM + Odin
         env:
@@ -83,14 +67,26 @@ jobs:
         run: ./odin run examples/demo -debug
         timeout-minutes: 10
         working-directory: Odin
+      - name: Odin run -o:speed
+        run: ./odin run examples/demo -o:speed
+        timeout-minutes: 10
+        working-directory: Odin
+      - name: Odin run -o:aggressive
+        run: ./odin run examples/demo -o:aggressive
+        timeout-minutes: 10
+        working-directory: Odin
       - name: Odin check examples/all
         run: ./odin check examples/all -strict-style
         timeout-minutes: 10
         working-directory: Odin
-      - name: Core library tests
+      - name: Odin core library tests
         run: make
         timeout-minutes: 10
         working-directory: Odin/tests/core
+      - name: Odin vendor library tests
+        run: make
+        timeout-minutes: 10
+        working-directory: Odin/tests/vendor
       - name: Odin internals tests
         run: make
         timeout-minutes: 10
@@ -108,10 +104,12 @@ jobs:
         timeout-minutes: 10
         working-directory: Odin
 
-      - uses: actions/cache/save@v3
+      - name: Save linux-ccache
+        uses: actions/cache/save@v3
         if: github.ref_name == 'master'
-        with: { key: linux-ccache, path: ~/.cache/ccache }
-      - uses: actions/cache/save@v3
+        with: { key: linux-ccache, path: ~/.ccache }
+      - name: Save linux-llvm-${{ matrix.llvm }}
+        uses: actions/cache/save@v3
         if: github.ref_name == 'master'
         with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
