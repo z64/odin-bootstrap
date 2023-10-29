@@ -21,11 +21,12 @@ fi
 # LLVM
 #
 
-LLVM_BUILD_PATH="$PWD/build"
-LLVM_BIN_PATH="$LLVM_BUILD_PATH/bin"
-LLVM_CONFIG="$LLVM_BIN_PATH/llvm-config"
 LLVM_PATH="$PWD/llvm-project"
 LLVM_SOURCE_PATH="$LLVM_PATH/llvm"
+
+LLVM_BUILD_PATH="$LLVM_PATH/build"
+LLVM_BIN_PATH="$LLVM_BUILD_PATH/bin"
+LLVM_CONFIG="$LLVM_BIN_PATH/llvm-config"
 
 if [ ! -d "$(basename $LLVM_SOURCE)" ]; then
 	git clone --branch="$LLVM_BRANCH" --depth=1 $LLVM_SOURCE
@@ -59,11 +60,11 @@ llvm_cmake() {
 }
 
 llvm_build() {
-	if [ ! -e $LLVM_BUILD_PATH/CMakeCache.txt ]; then
-		if [ ! -d "$LLVM_BUILD_PATH" ]; then
-			mkdir -p $LLVM_BUILD_PATH
-		fi
+	if [ ! -d "$LLVM_BUILD_PATH" ]; then
+		mkdir -p $LLVM_BUILD_PATH
+	fi
 
+	if [ ! -e $LLVM_BUILD_PATH/CMakeCache.txt ]; then
 		llvm_cmake $@
 
 		if [ "$CMAKE_GENERATOR" = "Ninja" ]; then

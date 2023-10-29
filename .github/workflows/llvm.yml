@@ -18,7 +18,7 @@ jobs:
 
       - name: Restore build cache for linux-llvm-${{ matrix.llvm }}
         uses: actions/cache/restore@v3
-        with: { key: "linux-llvm-${{ matrix.llvm }}", path: build/ }
+        with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
       - name: Install clang-12 + lld-12 + botan
         run: |
@@ -104,7 +104,7 @@ jobs:
       - name: Save build cache for linux-llvm-${{ matrix.llvm }}
         uses: actions/cache/save@v3
         if: github.ref_name == 'master'
-        with: { key: "linux-llvm-${{ matrix.llvm }}", path: build/ }
+        with: { key: "linux-llvm-${{ matrix.llvm }}", path: llvm-project/ }
 
       # TODO(jcmdln): actions/upload-artifact breaks file permissions
       # TODO(jcmdln): https://github.com/actions/upload-artifact/issues/38
