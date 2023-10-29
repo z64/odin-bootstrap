@@ -27,6 +27,10 @@ LLVM_CONFIG="$LLVM_BIN_PATH/llvm-config"
 LLVM_PATH="$PWD/llvm-project"
 LLVM_SOURCE_PATH="$LLVM_PATH/llvm"
 
+if [ ! -d "$(basename $LLVM_SOURCE)" ]; then
+	git clone --branch="$LLVM_BRANCH" --depth=1 $LLVM_SOURCE
+fi
+
 llvm_cmake() {
 	cmake -Wno-dev -G "$CMAKE_GENERATOR" -B $LLVM_BUILD_PATH -S $LLVM_SOURCE_PATH \
 		-DCMAKE_BUILD_TYPE:STRING="$CMAKE_BUILD_TYPE" \
@@ -56,10 +60,6 @@ llvm_cmake() {
 
 llvm_build() {
 	if [ ! -e $LLVM_BUILD_PATH/CMakeCache.txt ]; then
-		if [ ! -d "$(basename $LLVM_SOURCE)" ]; then
-			git clone --branch="$LLVM_BRANCH" --depth=1 $LLVM_SOURCE
-		fi
-
 		if [ ! -d "$LLVM_BUILD_PATH" ]; then
 			mkdir -p $LLVM_BUILD_PATH
 		fi
